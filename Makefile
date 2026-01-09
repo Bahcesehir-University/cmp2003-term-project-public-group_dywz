@@ -1,15 +1,18 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -O3 -march=native -flto -Wall -Wextra
 TARGET = trip_analyzer
-SOURCE = trip_analyzer.cpp
+SOURCES = analyzer.cpp main.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
 
 all: $(TARGET)
 
-$(TARGET): $(SOURCE)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SOURCE)
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
+
+%.o: %.cpp analyzer.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(OBJECTS)
 
 .PHONY: all clean
-

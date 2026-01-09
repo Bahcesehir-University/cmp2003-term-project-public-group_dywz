@@ -2,30 +2,41 @@
 #include <iostream>
 #include <chrono>
 
-static void printZones(const std::vector<ZoneCount>& v) {
-    std::cout << "TOP_ZONES\n";
-    for (auto& x : v)
-        std::cout << x.zone << "," << x.count << "\n";
-}
-
-static void printSlots(const std::vector<SlotCount>& v) {
-    std::cout << "TOP_SLOTS\n";
-    for (auto& x : v)
-        std::cout << x.zone << "," << x.hour << "," << x.count << "\n";
-}
+using namespace std;
+using namespace std::chrono;
 
 int main() {
-    auto t0 = std::chrono::high_resolution_clock::now();
-
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    auto start = high_resolution_clock::now();
+    
     TripAnalyzer analyzer;
     analyzer.ingestFile("SmallTrips.csv");
-
-    printZones(analyzer.topZones(10));
-    printSlots(analyzer.topBusySlots(10));
-
-    auto t1 = std::chrono::high_resolution_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-
-    std::cout << "EXEC_MS\n" << ms << "\n";
+    
+    auto ingestEnd = high_resolution_clock::now();
+    
+    vector<ZoneCount> top_zones = analyzer.topZones();
+    vector<SlotCount> top_slots = analyzer.topBusySlots();
+    
+    auto end = high_resolution_clock::now();
+    
+    cout << "TOP_ZONES\n";
+    for (const auto& z : top_zones) {
+        cout << z.zone << "," << z.count << "\n";
+    }
+    
+    cout << "TOP_SLOTS\n";
+    for (const auto& s : top_slots) {
+        cout << s.zone << "," << s.hour << "," << s.count << "\n";
+    }
+    
+    auto totalTime = duration_cast<milliseconds>(end - start).count();
+    auto ingestTime = duration_cast<milliseconds>(ingestEnd - start).count();
+    
+    cerr << "Ingest time: " << ingestTime << " ms\n";
+    cerr << "Total time: " << totalTime << " ms\n";
+    
     return 0;
 }
+
